@@ -43,7 +43,27 @@ export class UserService implements JpaRepository<User> {
         return user;
     }
 
-    update(user: User): User | null {
-        return null;
+    // @ts-ignore
+    async update(user: User): Promise<User | null> {
+        try {
+            const { id, password } = user;
+
+            // Hash the password if it exists
+            if (password) {
+                user.password = await this.passwordService.hashPassword(password);
+            }
+
+            delete user.id; // Remove the ID from the user object to prevent updating it
+
+            await User.update(user.dataValues, { where: { id } });
+
+            const updatedUser = await User.findByPk(id);
+            return updatedUser;
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
     }
+
+
 }

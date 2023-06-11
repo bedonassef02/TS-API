@@ -45,9 +45,33 @@ class UserController implements ICRUD {
         }
     }
 
-    update(request: Request, response: Response): void {
-        // Implement the update logic
+    async update(request: Request, response: Response): Promise<void> {
+        try {
+            const {id} = request.params;
+            const user: User = await this.userService.findById(Number(id));
+
+            if (!user) {
+                response.status(404).json({msg: "User not found"});
+                return;
+            }
+            // Update the user with the new data
+            const updatedUser: User = this.getUser(request);
+            updatedUser.id = user.id; // Ensure the ID is preserved
+
+            const result: User | null = await this.userService.update(updatedUser);
+
+            if (!result) {
+                response.status(500).json({msg: "Failed to update user"});
+                return;
+            }
+
+            response.status(200).json(result);
+        } catch (e) {
+            console.error(e);
+            response.status(500).json({msg: "Failed to update user"});
+        }
     }
+
 
     private getUser(request: Request): User {
         const {name, email, password} = request.body;

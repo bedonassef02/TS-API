@@ -1,6 +1,6 @@
-import express, {Router, Request, Response} from 'express';
+import express, { Router, Request, Response } from 'express';
 import UserController from '../controllers/UserController';
-import {UserService} from '../services/UserService';
+import { UserService } from '../services/UserService';
 
 const router: Router = express.Router();
 const userService: UserService = new UserService();
@@ -16,6 +16,10 @@ router.get('/:id', (request: Request, response: Response) => {
 
 router.post('/', (request: Request, response: Response) => {
     userController.create(request, response);
+});
+
+router.put('/:id', (request: Request, response: Response) => {
+    userController.update(request, response);
 });
 
 router.delete('/:id', (request: Request, response: Response) => {
